@@ -1,4 +1,4 @@
 export const environment = {
-	apiUrl: 'http://localhost:4200',
+	apiUrl: 'https://snf-895798.vm.okeanos.grnet.gr',
 	appName: 'Verifier'
 };

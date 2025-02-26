@@ -3,8 +3,8 @@
   "version": "0.6.1",
   "scripts": {
     "ng": "ng",
-    "start": "npm run config && ng serve --proxy-config src/proxy.conf.json",
-    "build": "npm run config && ng build --build-optimizer --configuration=production",
+    "build": "npm run config && ng build --configuration=production",
+    "start": "npm run config && ng serve --host 0.0.0.0 --public-host snf-895798.vm.okeanos.grnet.gr --proxy-config src/proxy.conf.json",
     "watch": "npm run config && ng build --watch --configuration=development",
     "config": "node set-env.js",
     "test": "ng test",

@@ -1,19 +1,19 @@
 {
   "/ui": {
-    "target": "https://dev.verifier-backend.eudiw.dev",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
+      "target": "https://snf-895798.vm.okeanos.grnet.gr",
+      "secure": true,
+      "logLevel": "debug",
+      "changeOrigin": true
   },
   "/wallet": {
-    "target": "https://dev.verifier-backend.eudiw.dev",
-    "secure": false,
+    "target": "https://snf-895798.vm.okeanos.grnet.gr",
+    "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/utilities": {
-    "target": "https://dev.verifier-backend.eudiw.dev",
-    "secure": false,
+    "target": "https://snf-895798.vm.okeanos.grnet.gr",
+    "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   }
