@@ -1,9 +1,11 @@
 import {Injectable} from "@angular/core";
 import {AttestationDecoder} from "@core/services/decoders/AttestationDecoder";
-import {SharedAttestation, Single} from "@core/models/presentation/SharedAttestation";
-import {AttestationFormat} from "@core/models/AttestationFormat";
+import {PresentedAttestation, Single} from "@core/models/presentation/PresentedAttestation";
+import {AttestationFormat} from "@core/models/attestation/AttestationFormat";
 import {JWTService} from "@core/services/jwt.service";
 import {KeyValue} from "@angular/common";
+import {elementAsString} from "@core/services/decoders/DecodingUtils";
+import {Observable, of} from "rxjs";
 
 const TYPE_VerifiableAttestation = "VerifiableAttestation"
 const TYPE_VerifiableCredential = "VerifiableCredential"
@@ -22,19 +24,19 @@ export class JwtVcJsonAttestationDecoder implements AttestationDecoder {
     return format === AttestationFormat.JWT_VC_JSON;
   }
 
-  decode(attestation: string): SharedAttestation {
+  decode(attestation: string, nonce: string): Observable<PresentedAttestation> {
     let vp = this.jWTService.decodeToObject(attestation);
     let sharedCredentials = this.unWrapCredentials(vp)
 
     if (sharedCredentials.length == 1) {
-      return this.toSinge(sharedCredentials[0])
+      return of(this.toSinge(sharedCredentials[0]))
 
     } else {
       let singles = sharedCredentials.map(it => this.toSinge(it));
-      return {
+      return of({
         kind: "enveloped",
         attestations: singles
-      }
+      })
     }
   }
 
@@ -64,7 +66,7 @@ export class JwtVcJsonAttestationDecoder implements AttestationDecoder {
     Object.keys(credentialSubject).forEach((item) => {
       result.push({
         key: item.replaceAll('_', ' '),
-        value: this.asString(credentialSubject[item])
+        value: elementAsString(credentialSubject[item])
       });
     });
     return result;
@@ -77,35 +79,11 @@ export class JwtVcJsonAttestationDecoder implements AttestationDecoder {
       if (item !== "credentialSubject") {
         result.push({
           key: item.replaceAll('_', ' '),
-          value: this.asString(vcElement[item])
+          value: elementAsString(vcElement[item])
         });
       }
     });
     return result;
   }
 
-  asString(element: any, prepend?: string): string {
-    if ((typeof element) === "object") {
-
-      if (Array.isArray(element)) {
-        return (element as string[]).map((it) => {
-          return JSON.stringify(it);
-        }).join(', ')
-
-      } else {
-        let str = ""
-        if (typeof prepend !== 'undefined') {
-          str += "<br/>"
-        } else {
-          prepend = ""
-        }
-        return str + Object.keys(element).map((it) => {
-          return prepend + "&nbsp;&nbsp;" + it + ": " + this.asString(element[it], "&nbsp;&nbsp;").toString()
-        }).join("<br/>");
-      }
-
-    } else {
-      return element.toString();
-    }
-  }
 }

@@ -1,11 +1,13 @@
 import {Injectable} from "@angular/core";
 import {AttestationDecoder} from "@core/services/decoders/AttestationDecoder";
-import {AttestationFormat} from "@core/models/AttestationFormat";
+import {AttestationFormat} from "@core/models/attestation/AttestationFormat";
 import {decode} from "cbor-x";
 import {Buffer} from 'buffer';
 
-import {SharedAttestation, Single} from "@core/models/presentation/SharedAttestation";
+import {PresentedAttestation, Single} from "@core/models/presentation/PresentedAttestation";
 import {KeyValue} from "@angular/common";
+import {elementAsString} from "@core/services/decoders/DecodingUtils";
+import {Observable, of} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -16,19 +18,20 @@ export class MsoMdocAttestationDecoder implements AttestationDecoder {
     return format === AttestationFormat.MSO_MDOC;
   }
 
-  decode(attestation: string): SharedAttestation {
+  decode(attestation: string, nonce: string): Observable<PresentedAttestation> {
     const buffer = this.decodeBase64OrHex(attestation);
     const decodedData = this.decodeCborData(buffer);
     if (decodedData.documents.length === 1) {
-      return this.extractAttestationSingle(decodedData.documents[0])
+      return of(this.extractAttestationSingle(decodedData.documents[0]))
+
     } else {
       let attestations: Single[] = decodedData.documents.map((doc: any) => {
         return this.extractAttestationSingle(doc)
       })
-      return {
+      return of({
         kind: "enveloped",
         attestations: attestations
-      }
+      })
     }
   }
 
@@ -42,7 +45,7 @@ export class MsoMdocAttestationDecoder implements AttestationDecoder {
         const decodedElement = this.decodeCborData(element.value);
         attributes.push({
           key: it + ":" + decodedElement.elementIdentifier,
-          value: this.asString(decodedElement.elementValue)
+          value: elementAsString(decodedElement.elementValue)
         });
       }
 
@@ -73,32 +76,5 @@ export class MsoMdocAttestationDecoder implements AttestationDecoder {
       return null;
     }
   }
-
-  asString(element: any, prepend?: string): string {
-    if ((typeof element) === "object") {
-
-      if (Array.isArray(element)) {
-        return (element as string[]).map((it) => {
-          return JSON.stringify(it);
-        }).join(', ')
-
-      } else {
-        let str = ""
-        if (typeof prepend !== 'undefined') {
-          str += "<br/>"
-        } else {
-          prepend = ""
-        }
-        return str + Object.keys(element).map((it) => {
-          return prepend + "&nbsp;&nbsp;" + it + ": " + this.asString(element[it], "&nbsp;&nbsp;").toString()
-        }).join("<br/>");
-      }
-
-    } else {
-      return element.toString();
-    }
-  }
-
-
 
 }
