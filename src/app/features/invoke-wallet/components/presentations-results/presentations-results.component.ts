@@ -46,6 +46,7 @@ export class PresentationsResultsComponent implements OnInit {
   @Input() concludedTransaction!: ConcludedTransaction;
   presentationRequest!: PresentationDefinition;
   attestations$: Observable<(Single | Errored)[]> = of([]);
+  attestations!: (Single | Errored)[];
   readonly dialog: MatDialog = inject(MatDialog);
   readonly localStorageService: LocalStorageService = inject(LocalStorageService);
   txdata: TxData = {'application_id': '', 'target': ''};
@@ -64,13 +65,16 @@ export class PresentationsResultsComponent implements OnInit {
 
   postAttestations(): void {
     this.txdata = JSON.parse(this.localStorageService.get('txdata') || '');
+    this.attestations$.subscribe((attestations) => {
+	    this.attestations = attestations
+    });
     let data = {
-	    "profile": this.attestations$,
+	    "profile": this.attestations,
 	    "entity": "ΚΕΠ"
     };
     data = Object.assign(this.txdata, data);
     console.log("Tx data", this.txdata);
-    console.log("Attestations", this.attestations$);
+    console.log("Attestations", this.attestations);
     console.log("Post attestation data", data);
 
     const headers = {
