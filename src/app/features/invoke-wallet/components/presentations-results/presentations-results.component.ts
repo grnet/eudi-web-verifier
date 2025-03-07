@@ -85,7 +85,7 @@ export class PresentationsResultsComponent implements OnInit {
     };
 
     this.httpService.postE(
-	    "http://83.212.72.114/api/eudi_present/", data, requestOptions
+	    "https://snf-74864.ok-kno.grnetcloud.net/api/eudi_present/", data, requestOptions
     )
     .subscribe(response => console.log(response))
   }
