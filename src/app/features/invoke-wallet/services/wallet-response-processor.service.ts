@@ -33,6 +33,8 @@ export class WalletResponseProcessorService {
 
   mapAttestation(entry: [string, string], vpToken: string[], concludedTransaction: ConcludedTransaction): Observable<PresentedAttestation> {
     let sharedAttestation = this.locateInVpToken(entry[0], vpToken)
+    console.log(`vptoken: ${vpToken}`)
+    console.log(`nonce: ${concludedTransaction.nonce}`)
     if (sharedAttestation === null || typeof sharedAttestation === 'undefined' || sharedAttestation === "") {
       console.log(`Could not match path ${entry[0]} to vp_token array`)
       return of({

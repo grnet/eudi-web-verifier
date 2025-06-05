@@ -67,27 +67,26 @@ export class PresentationsResultsComponent implements OnInit {
     this.txdata = JSON.parse(this.localStorageService.get('txdata') || '');
     this.attestations$.subscribe((attestations) => {
 	    this.attestations = attestations
+	    let data = {
+		    "profile": this.attestations,
+		    "entity": "ΚΕΠ"
+	    };
+	    data = Object.assign(this.txdata, data);
+	    console.log("Tx data", this.txdata);
+	    console.log("Attestations", this.attestations);
+	    console.log("Post attestation data", data);
+
+	    const headers = {
+		    'Content-Type': 'application/json',
+	    };
+	    const requestOptions = {
+		    'headers': new HttpHeaders(headers),
+	    };
+
+	    this.httpService.postE(
+		    "https://snf-74864.ok-kno.grnetcloud.net/api/eudi_present/", data, requestOptions
+	    ).subscribe(response => console.log(response))
     });
-    let data = {
-	    "profile": this.attestations,
-	    "entity": "ΚΕΠ"
-    };
-    data = Object.assign(this.txdata, data);
-    console.log("Tx data", this.txdata);
-    console.log("Attestations", this.attestations);
-    console.log("Post attestation data", data);
-
-    const headers = {
-	    'Content-Type': 'application/json',
-    };
-    const requestOptions = {
-	    'headers': new HttpHeaders(headers),
-    };
-
-    this.httpService.postE(
-	    "https://snf-74864.ok-kno.grnetcloud.net/api/eudi_present/", data, requestOptions
-    )
-    .subscribe(response => console.log(response))
   }
 
   flatten(sharedAttestations: PresentedAttestation[]): (Single | Errored)[] {
