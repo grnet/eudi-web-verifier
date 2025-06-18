@@ -1,18 +1,18 @@
 {
   "/ui": {
-      "target": "https://snf-895798.vm.okeanos.grnet.gr",
+      "target": "https://snf-898225.vm.okeanos.grnet.gr",
       "secure": true,
       "logLevel": "debug",
       "changeOrigin": true
   },
   "/wallet": {
-    "target": "https://snf-895798.vm.okeanos.grnet.gr",
+    "target": "https://snf-898225.vm.okeanos.grnet.gr",
     "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/utilities": {
-    "target": "https://snf-895798.vm.okeanos.grnet.gr",
+    "target": "https://snf-898225.vm.okeanos.grnet.gr",
     "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
