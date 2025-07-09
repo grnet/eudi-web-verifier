@@ -89,6 +89,29 @@ export const AGE_OVER_18_ATTESTATION: AttestationDefinition = {
   ]
 }
 
+export const EDUCATIONAL_ID_ATTESTATION: AttestationDefinition = {
+  name: "EducationalID",
+  type: AttestationType.EDUCATIONAL_ID,
+  dataSet: [
+    { identifier: 'vc_token', attribute: 'EBSI VC token'},
+    { identifier: 'commonName', attribute: 'Educational ID identifier'},
+    { identifier: 'dateOfBirth', attribute: 'Date of birth'},
+    { identifier: 'displayName', attribute: 'Display name'},
+    { identifier: 'eduPersonAffiliation', attribute: 'Person Affiliation'},
+    { identifier: 'eduPersonAssurance', attribute: 'Assurance'},
+    { identifier: 'eduPersonPrimaryAffiliation', attribute: 'Primary affiliation'},
+    { identifier: 'eduPersonPrincipalName', attribute: 'Principal name'},
+    { identifier: 'eduPersonScopedAffiliation', attribute: 'Scoped Affiliation'},
+    { identifier: 'family_name', attribute: 'Family name'},
+    { identifier: 'id', attribute: 'ID'},
+    { identifier: 'identifier', attribute: 'Identifier'},
+    { identifier: 'mail', attribute: 'Mail address'},
+    { identifier: 'schacHomeOrganization', attribute: 'Home organization'},
+    { identifier: 'schacPersonalUniqueCode', attribute: 'Personal unique code'},
+    { identifier: 'schacPersonalUniqueID', attribute: 'Personal unique ID'}
+  ]
+}
+
 export const PHOTO_ID_ATTESTATION: AttestationDefinition = {
   name: "Photo ID",
   type: AttestationType.PHOTO_ID,
@@ -133,5 +156,6 @@ export const SUPPORTED_ATTESTATIONS: { [id: string]: AttestationDefinition } = {
   "mdl": MDL_ATTESTATION,
   "photo_id": PHOTO_ID_ATTESTATION,
   "age_over_18": AGE_OVER_18_ATTESTATION,
+  "educational_id": EDUCATIONAL_ID_ATTESTATION,
 }
 
