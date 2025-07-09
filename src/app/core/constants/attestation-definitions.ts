@@ -5,6 +5,7 @@ export const PID_ATTESTATION: AttestationDefinition = {
   name: "Person Identification Data (PID)",
   type: AttestationType.PID,
   dataSet: [
+    { identifier: 'vc_token', attribute: 'EBSI VC token'},
     { identifier: 'family_name', attribute: 'Family name'},
     { identifier: 'given_name', attribute: 'Given name'},
     { identifier: 'birth_date', attribute: 'Birthdate'},
