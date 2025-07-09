@@ -72,6 +72,29 @@ export const MDL_ATTESTATION: AttestationDefinition = {
   ]
 }
 
+export const EDUCATIONAL_ID_ATTESTATION: AttestationDefinition = {
+  name: "EducationalID",
+  type: AttestationType.EDUCATIONAL_ID,
+  dataSet: [
+    { identifier: 'commonName', attribute: 'Educational ID identifier'},
+    { identifier: 'dateOfBirth', attribute: 'Date of birth'},
+    { identifier: 'displayName', attribute: 'Display name'},
+    { identifier: 'eduPersonAffiliation', attribute: 'Person Affiliation'},
+    { identifier: 'eduPersonAssurance', attribute: 'Assurance'},
+    { identifier: 'eduPersonPrimaryAffiliation', attribute: 'Primary affiliation'},
+    { identifier: 'eduPersonPrincipalName', attribute: 'Principal name'},
+    { identifier: 'eduPersonScopedAffiliation', attribute: 'Scoped Affiliation'},
+    { identifier: 'familyName', attribute: 'Family name'},
+    { identifier: 'firstName', attribute: 'First name'},
+    { identifier: 'id', attribute: 'ID'},
+    { identifier: 'identifier', attribute: 'Identifier'},
+    { identifier: 'mail', attribute: 'Mail address'},
+    { identifier: 'schacHomeOrganization', attribute: 'Home organization'},
+    { identifier: 'schacPersonalUniqueCode', attribute: 'Personal unique code'},
+    { identifier: 'schacPersonalUniqueID', attribute: 'Personal unique ID'}
+  ]
+}
+
 export const PHOTO_ID_ATTESTATION: AttestationDefinition = {
   name: "Photo ID",
   type: AttestationType.PHOTO_ID,
@@ -182,4 +205,5 @@ export const SUPPORTED_ATTESTATIONS: { [id: string]: AttestationDefinition } = {
   "ehic-dc4eu": EHIC_ATTESTATION_DC4EU,
   "pda1": PDA1_ATTESTATION,
   "learning_credential": LEARNING_CREDENTIAL_ATTESTATION,
+  "educational_id": EDUCATIONAL_ID_ATTESTATION
 }
