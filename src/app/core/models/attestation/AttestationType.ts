@@ -5,5 +5,6 @@ export enum AttestationType {
   EHIC = "ehic",
   PDA1 = "pda1",
   LEARNING_CREDENTIAL = "learning_credential",
-  EDUCATIONAL_ID = "educational_id"
+  EDUCATIONAL_ID = "educational_id",
+  ALLIANCE_ID = "alliance_id"
 }

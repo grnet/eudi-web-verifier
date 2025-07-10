@@ -96,6 +96,15 @@ export const EDUCATIONAL_ID_ATTESTATION: AttestationDefinition = {
   ]
 }
 
+export const ALLIANCE_ID_ATTESTATION: AttestationDefinition = {
+  name: "AllianceID",
+  type: AttestationType.ALLIANCE_ID,
+  dataSet: [
+    { identifier: 'id', attribute: 'ID'},
+    { identifier: 'identifier', attribute: 'identifier'}
+  ]
+}
+
 export const PHOTO_ID_ATTESTATION: AttestationDefinition = {
   name: "Photo ID",
   type: AttestationType.PHOTO_ID,
@@ -196,5 +205,6 @@ export const SUPPORTED_ATTESTATIONS: { [id: string]: AttestationDefinition } = {
   "ehic": EHIC_ATTESTATION,
   "pda1": PDA1_ATTESTATION,
   "learning_credential": LEARNING_CREDENTIAL_ATTESTATION,
-  "educational_id": EDUCATIONAL_ID_ATTESTATION
+  "educational_id": EDUCATIONAL_ID_ATTESTATION,
+  "alliance_id": ALLIANCE_ID_ATTESTATION
 }
