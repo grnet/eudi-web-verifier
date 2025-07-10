@@ -3,5 +3,6 @@ export enum AttestationType {
   MDL = "mdl",
   PHOTO_ID = "photo_id",
   AGE_OVER_18 = "age_over_18",
-  EDUCATIONAL_ID = "educational_id"
+  EDUCATIONAL_ID = "educational_id",
+  ALLIANCE_ID = "alliance_id"
 }

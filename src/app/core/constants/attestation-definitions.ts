@@ -112,6 +112,16 @@ export const EDUCATIONAL_ID_ATTESTATION: AttestationDefinition = {
   ]
 }
 
+export const ALLIANCE_ID_ATTESTATION: AttestationDefinition = {
+  name: "AllianceID",
+  type: AttestationType.ALLIANCE_ID,
+  dataSet: [
+    { identifier: 'vc_token', attribute: 'EBSI VC token'},
+    { identifier: 'id', attribute: 'ID'},
+    { identifier: 'identifier', attribute: 'identifier'}
+  ]
+}
+
 export const PHOTO_ID_ATTESTATION: AttestationDefinition = {
   name: "Photo ID",
   type: AttestationType.PHOTO_ID,
@@ -157,5 +167,5 @@ export const SUPPORTED_ATTESTATIONS: { [id: string]: AttestationDefinition } = {
   "photo_id": PHOTO_ID_ATTESTATION,
   "age_over_18": AGE_OVER_18_ATTESTATION,
   "educational_id": EDUCATIONAL_ID_ATTESTATION,
+  "alliance_id": ALLIANCE_ID_ATTESTATION
 }
-

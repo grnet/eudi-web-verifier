@@ -1,5 +1,5 @@
 import {Attestation, MsoMdocAttestation, SdJwtVcAttestation} from "@core/models/attestation/Attestations";
-import {AGE_OVER_18_ATTESTATION, EDUCATIONAL_ID_ATTESTATION, MDL_ATTESTATION, PHOTO_ID_ATTESTATION, PID_ATTESTATION} from "@core/constants/attestation-definitions";
+import {AGE_OVER_18_ATTESTATION, ALLIANCE_ID_ATTESTATION, EDUCATIONAL_ID_ATTESTATION, MDL_ATTESTATION, PHOTO_ID_ATTESTATION, PID_ATTESTATION} from "@core/constants/attestation-definitions";
 import {AttestationFormat} from "@core/models/attestation/AttestationFormat";
 import {AttestationType} from "@core/models/attestation/AttestationType";
 import {DataElement} from "@core/models/attestation/AttestationDefinition";
@@ -60,6 +60,15 @@ export const EDUCATIONAL_ID_MSO_MDOC: MsoMdocAttestation = {
   attributePath: (attribute: DataElement) => { return msoMdocAttributePath(attribute, 'eu.europa.ec.eudi.educational_id.1') }
 }
 
+/*---- ALLIANCE ID ATTESTATION INSTANCES PER FORMAT ----*/
+export const ALLIANCE_ID_MSO_MDOC: MsoMdocAttestation = {
+  format: AttestationFormat.MSO_MDOC,
+  attestationDef: ALLIANCE_ID_ATTESTATION,
+  doctype: 'eu.europa.ec.eudi.alliance_id.1',
+  namespace: 'eu.europa.ec.eudi.alliance_id.1',
+  attributePath: (attribute: DataElement) => { return msoMdocAttributePath(attribute, 'eu.europa.ec.eudi.alliance_id.1') }
+}
+
 function msoMdocAttributePath(attribute: DataElement, namespace: string): string {
   return '$[\'' + namespace + '\'][\'' + attribute.identifier + '\']'
 }
@@ -96,7 +105,7 @@ export const PID_SD_JWT_VC_ATTRIBUTE_MAP: { [id: string]: string } = {
 }
 
 export const ATTESTATIONS_BY_FORMAT: { [id: string]: Attestation[] } = {
-  "mso_mdoc": [PID_MSO_MDOC, MDL_MSO_MDOC, PHOTO_ID_MSO_MDOC, AGE_OVER_18_MSO_MDOC, EDUCATIONAL_ID_MSO_MDOC],
+  "mso_mdoc": [PID_MSO_MDOC, MDL_MSO_MDOC, PHOTO_ID_MSO_MDOC, AGE_OVER_18_MSO_MDOC, EDUCATIONAL_ID_MSO_MDOC, ALLIANCE_ID_MSO_MDOC],
   "vc+sd-jwt": [PID_SD_JWT_VC]
 }
 
