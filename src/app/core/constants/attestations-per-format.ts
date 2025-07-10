@@ -1,5 +1,5 @@
 import {Attestation, MsoMdocAttestation, SdJwtVcAttestation} from "@core/models/attestation/Attestations";
-import {ALLIANCE_ID_ATTESTATION, EDUCATIONAL_ID_ATTESTATION, EHIC_ATTESTATION, EHIC_ATTESTATION_DC4EU, MDL_ATTESTATION, PDA1_ATTESTATION, PHOTO_ID_ATTESTATION, PID_ATTESTATION, LEARNING_CREDENTIAL_ATTESTATION} from "@core/constants/attestation-definitions";
+import {ALLIANCE_ID_ATTESTATION, EDUCATIONAL_ID_ATTESTATION, EHIC_ATTESTATION, EHIC_ATTESTATION_DC4EU, MDL_ATTESTATION, MY_ACADEMIC_ID_ATTESTATION, PDA1_ATTESTATION, PHOTO_ID_ATTESTATION, PID_ATTESTATION, LEARNING_CREDENTIAL_ATTESTATION} from "@core/constants/attestation-definitions";
 import {AttestationFormat} from "@core/models/attestation/AttestationFormat";
 import {AttestationType} from "@core/models/attestation/AttestationType";
 import {DataElement} from "@core/models/attestation/AttestationDefinition";
@@ -105,6 +105,15 @@ export const LEARNING_CREDENTIAL_SD_JWT_VC: SdJwtVcAttestation = {
   claimQuery: (attribute: DataElement) => { return { path: sdJwtVcAttributeClaimQuery(attribute, AttestationType.LEARNING_CREDENTIAL) } }
 }
 
+/*---- MY ACADEMIC ID ATTESTATION INSTANCES PER FORMAT ----*/
+export const MY_ACADEMIC_ID_MSO_MDOC: MsoMdocAttestation = {
+  format: AttestationFormat.MSO_MDOC,
+  attestationDef: MY_ACADEMIC_ID_ATTESTATION,
+  doctype: 'eu.europa.ec.eudi.my_academic_id.1',
+  namespace: 'eu.europa.ec.eudi.my_academic_id.1',
+  claimQuery: (attribute: DataElement) => { return msoMdocClaimQuery('eu.europa.ec.eudi.my_academic_id.1', attribute.identifier) }
+}
+
 function resolveAttribute(attribute: DataElement, attestationType: AttestationType): string {
   let resolvedAttribute = attribute.identifier
   if (attestationType === AttestationType.PID) {
@@ -152,7 +161,7 @@ export const PID_SD_JWT_VC_ATTRIBUTE_MAP: { [id: string]: string } = {
 }
 
 export const ATTESTATIONS_BY_FORMAT: { [id: string]: Attestation[] } = {
-  "mso_mdoc": [PID_MSO_MDOC, MDL_MSO_MDOC, PHOTO_ID_MSO_MDOC, EHIC_MSO_MDOC, PDA1_MSO_MDOC, EDUCATIONAL_ID_MSO_MDOC, ALLIANCE_ID_MSO_MDOC],
+  "mso_mdoc": [PID_MSO_MDOC, MDL_MSO_MDOC, PHOTO_ID_MSO_MDOC, EHIC_MSO_MDOC, PDA1_MSO_MDOC, EDUCATIONAL_ID_MSO_MDOC, ALLIANCE_ID_MSO_MDOC, MY_ACADEMIC_ID_MSO_MDOC],
   "dc+sd-jwt": [PID_SD_JWT_VC, EHIC_SD_JWT_VC, PDA1_SD_JWT_VC, EHIC_SD_JWT_VC_DC4EU, LEARNING_CREDENTIAL_SD_JWT_VC]
 }
 

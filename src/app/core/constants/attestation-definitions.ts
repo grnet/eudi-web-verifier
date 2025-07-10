@@ -104,6 +104,24 @@ export const ALLIANCE_ID_ATTESTATION: AttestationDefinition = {
   ]
 }
 
+export const MY_ACADEMIC_ID_ATTESTATION: AttestationDefinition = {
+  name: "MyAcademicID",
+  type: AttestationType.MY_ACADEMIC_ID,
+  dataSet: [
+    { identifier: 'assurance', attribute: 'Assurance'},
+    { identifier: 'communityUserIdentifier', attribute: 'Community user identifier'},
+    { identifier: 'displayName', attribute: 'Display name'},
+    { identifier: 'emailAddress', attribute: 'Email address'},
+    { identifier: 'entitlements', attribute: 'Entitlements'},
+    { identifier: 'europeanStudentIdentifier', attribute: 'European student identifier'},
+    { identifier: 'externalAffiliation', attribute: 'External affiliation'},
+    { identifier: 'familyName', attribute: 'Family name'},
+    { identifier: 'givenName', attribute: 'Given name'},
+    { identifier: 'id', attribute: 'ID'},
+    { identifier: 'organization', attribute: 'Organization'}
+  ]
+}
+
 export const PHOTO_ID_ATTESTATION: AttestationDefinition = {
   name: "Photo ID",
   type: AttestationType.PHOTO_ID,
@@ -215,5 +233,6 @@ export const SUPPORTED_ATTESTATIONS: { [id: string]: AttestationDefinition } = {
   "pda1": PDA1_ATTESTATION,
   "learning_credential": LEARNING_CREDENTIAL_ATTESTATION,
   "educational_id": EDUCATIONAL_ID_ATTESTATION,
-  "alliance_id": ALLIANCE_ID_ATTESTATION
+  "alliance_id": ALLIANCE_ID_ATTESTATION,
+  "my_academic_id": MY_ACADEMIC_ID_ATTESTATION,
 }
