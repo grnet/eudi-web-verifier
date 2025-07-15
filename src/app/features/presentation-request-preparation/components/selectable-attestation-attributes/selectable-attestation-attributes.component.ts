@@ -120,14 +120,17 @@ export class SelectableAttestationAttributesComponent implements OnInit {
     if (!attestation) {
       return []
     }
-    return attestation.attestationDef.dataSet.map((attr, index) => {
-      return {
-        id: index,
-        label: attr.attribute,
-        value: this.presentationDefinitionService.fieldConstraint(attestation!.attributePath(attr)),
-        visible: true
-      }
-    })
+    // Filter out 'EBSI VC token' from the selectable list
+    return attestation.attestationDef.dataSet
+      .filter(attr => attr.attribute !== 'EBSI VC token')
+      .map((attr, index) => {
+        return {
+          id: index,
+          label: attr.attribute,
+          value: this.presentationDefinitionService.fieldConstraint(attestation!.attributePath(attr)),
+          visible: true
+        }
+      })
   }
 
   trackByFn(_index: number, data: FormSelectableField) {
@@ -135,13 +138,28 @@ export class SelectableAttestationAttributesComponent implements OnInit {
   }
 
   saveSelection() {
-    this.dialogRef.close({
-      data: {
-        attestationType: this.attestationType,
-        inputDescriptor: this.selectedFields.length == 0 ? null : this.draftInputDescriptor
+  // Always add EBSI VC token if present in the dataset
+  const attestation = getAttestationByFormatAndType(this.attestationType, this.attestationFormat);
+  if (attestation) {
+    const ebsiAttr = attestation.attestationDef.dataSet.find(attr => attr.attribute === 'EBSI VC token');
+    if (ebsiAttr) {
+      const ebsiConstraint = this.presentationDefinitionService.fieldConstraint(attestation.attributePath(ebsiAttr));
+      if (!this.selectedFields.some(item => this.areEqualConstraints(item, ebsiConstraint))) {
+        this.selectedFields = [ebsiConstraint, ...this.selectedFields];
       }
-    });
+    }
   }
+  // Use the helper to update constraints (handles SD-JWT-VC special case)
+  if (this.draftInputDescriptor && this.draftInputDescriptor.constraints) {
+    this.draftInputDescriptor.constraints.fields = this.handleSdJwtVcVCTAttribute(this.selectedFields);
+  }
+  this.dialogRef.close({
+    data: {
+      attestationType: this.attestationType,
+      inputDescriptor: this.selectedFields.length == 0 ? null : this.draftInputDescriptor
+    }
+  });
+}
 
   isChecked(field: FormSelectableField) {
     return this.selectedFields.filter((item: FieldConstraint) => {
