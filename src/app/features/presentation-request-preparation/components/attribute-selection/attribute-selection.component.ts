@@ -122,8 +122,18 @@ export class AttributeSelectionComponent implements OnInit, OnChanges {
   }
 
   fieldsSelectedNo(type: AttestationType): number {
-    if (this.inputDescriptorsByType[type as string])
-      return this.inputDescriptorsByType[type as string].constraints.fields.length;
+    if (this.inputDescriptorsByType[type as string]) {
+      const fields = this.inputDescriptorsByType[type as string].constraints.fields;
+      // Filter out fields with the specific path
+      const filteredFields = fields.filter(
+        (field: any) =>
+          !(
+            Array.isArray(field.path) &&
+            field.path.includes("$['eu.europa.ec.eudi.pid.1']['vc_token']")
+          )
+      );
+      return filteredFields.length;
+    }
     else
       return 0;
   }
