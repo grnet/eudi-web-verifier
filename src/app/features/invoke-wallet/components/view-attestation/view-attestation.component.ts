@@ -24,6 +24,14 @@ export class ViewAttestationComponent implements OnInit{
   attestation!: Single;
 
   ngOnInit (): void {
-    this.attestation = this.data.attestation;
+    const attrs = this.data.attestation.attributes;
+    // Filter out 'vc_token' when there are other attributes to display
+    const withoutVcToken = attrs.filter(attr => !attr.key.includes("vc_token"));
+    const filtered = withoutVcToken.length > 0 ? withoutVcToken : attrs;
+
+    this.attestation = {
+      ...this.data.attestation,
+      attributes: filtered
+    };
   }
 }
