@@ -30,6 +30,10 @@ export class WalletLayoutHeaderComponent {
 		this.navigateService.goHome();
 	}
 
+  goEBSI () {
+    window.open('https://ec.europa.eu/digital-building-blocks/sites/display/EBSI', '_blank');
+  }
+
   inspectLogs () {
     this.dialog.open(OpenLogsComponent, {
       data: {

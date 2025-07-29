@@ -14,8 +14,12 @@
     img {
         cursor: pointer;
         left: temp.$left;
-        padding: temp.$spaceBasic;
+        padding: temp.$space2Logos;
         position: relative;
+        height: 40px;
+        &:nth-child(2) {
+            height: 30px;
+        }
     }
 
     button {
