@@ -1,19 +1,19 @@
 {
   "/ui": {
-    "target": "https://dev.verifier-backend.eudiw.dev",
-    "secure": false,
+    "target": "https://snf-82771.ok-kno.grnetcloud.net",
+    "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/wallet": {
-    "target": "https://dev.verifier-backend.eudiw.dev",
-    "secure": false,
+    "target": "https://snf-82771.ok-kno.grnetcloud.net",
+    "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/utilities": {
-    "target": "https://dev.verifier-backend.eudiw.dev",
-    "secure": false,
+    "target": "https://snf-82771.ok-kno.grnetcloud.net",
+    "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   }

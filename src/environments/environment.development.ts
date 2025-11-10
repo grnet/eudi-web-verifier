@@ -1,5 +1,5 @@
 export const environment = {
-	apiUrl: 'http://localhost:4200',
+	apiUrl: 'https://snf-82771.ok-kno.grnetcloud.net:4200',
 	appName: 'Verifier',
 	openid4vpDraft: '1.0',
 };
