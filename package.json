@@ -3,7 +3,7 @@
   "version": "0.9.3-SNAPSHOT",
   "scripts": {
     "ng": "ng",
-    "start": "npm run config && ng serve --host 0.0.0.0 --disable-host-check --proxy-config src/proxy.conf.json",
+    "start": "npm run config && ng serve --host 0.0.0.0 --disable-host-check --proxy-config src/proxy.conf.json --ssl --ssl-key privkey.pem --ssl-cert fullchain.pem",
     "build": "npm run config && ng build --configuration=production",
     "watch": "npm run config && ng build --watch --configuration=development",
     "config": "node set-env.js",
