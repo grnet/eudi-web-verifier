@@ -39,6 +39,10 @@ export class HttpService extends NetworkRequest {
 	}
 
 	private getUrl (endpoint: string): string {
+		// if the endpoint is already a full URL, return it as is
+		if (/^https?:\/\//i.test(endpoint)) {
+			return endpoint;
+		}
 		return `${this.apiUrl}/${endpoint}`;
 	}
 }

@@ -23,6 +23,8 @@ export class WalletResponseProcessorService {
     let vpToken: { [id: string]: string[] } = concludedTransaction.walletResponse.vp_token;
 
     console.log(concludedTransaction)
+    console.log(`vptoken: ${JSON.stringify(vpToken)}`)
+    console.log(`nonce: ${concludedTransaction.nonce}`)
     dcqlQuery.credentials.forEach(credentialQuery => {
       
       const a = vpToken[credentialQuery.id]?.map(attestation => {
