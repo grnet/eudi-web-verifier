@@ -122,6 +122,26 @@ export const MY_ACADEMIC_ID_ATTESTATION: AttestationDefinition = {
   ]
 }
 
+export const EUVETMC_ATTESTATION: AttestationDefinition = {
+  name: "European Vocational Education and Training Microcredential",
+  type: AttestationType.EUVETMC,
+  dataSet: [
+    { identifier: 'id', attribute: 'ID'},
+    { identifier: 'dateOfBirth', attribute: 'Date of birth'},
+    { identifier: 'familyName', attribute: 'Family name'},
+    { identifier: 'givenName', attribute: 'Given name'},
+    { identifier: 'title', attribute: 'Title'},
+    { identifier: 'grade', attribute: 'Grade'},
+    { identifier: 'awardedBy_awardingBody', attribute: 'Awarding body'},
+    { identifier: 'awardedBy_awardingDate', attribute: 'Awarding date'},
+    { identifier: 'awardedBy_location', attribute: 'Awarding location'},
+    { identifier: 'specifiedBy_creditPoint', attribute: 'Credit point'},
+    { identifier: 'specifiedBy_educationSubject', attribute: 'Education subject'},
+    { identifier: 'specifiedBy_mode', attribute: 'Mode'},
+    { identifier: 'specifiedBy_eqfLevel', attribute: 'EQF Level'}
+  ]
+}
+
 export const PHOTO_ID_ATTESTATION: AttestationDefinition = {
   name: "Photo ID",
   type: AttestationType.PHOTO_ID,
@@ -235,4 +255,5 @@ export const SUPPORTED_ATTESTATIONS: { [id: string]: AttestationDefinition } = {
   "educational_id": EDUCATIONAL_ID_ATTESTATION,
   "alliance_id": ALLIANCE_ID_ATTESTATION,
   "my_academic_id": MY_ACADEMIC_ID_ATTESTATION,
+  "euvetmc": EUVETMC_ATTESTATION,
 }
