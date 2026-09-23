@@ -1,0 +1,45 @@
+# The verifier UI. See deploy/README.md.
+#
+# Use deploy.sh or the Deploy workflow, not compose directly.
+#
+# proxy-net belongs to eudi-srv-wallet-provider and must be up first.
+
+name: eudiw-verifier-ui
+
+services:
+  verifier-ui:
+    image: ${VERIFIER_UI_IMAGE:?set by the deploy workflow}
+    container_name: eudiw-verifier-ui
+    restart: unless-stopped
+    expose:
+      # 4300, not the 4200 `ng serve` uses in development.
+      - "4300"
+    environment:
+      VIRTUAL_HOST: ${VERIFIER_UI_HOST:?set in stack.env}
+      VIRTUAL_PORT: "4300"
+      VIRTUAL_PATH: ${VERIFIER_UI_PATH:?set in stack.env}
+      # Strips the prefix: nginx inside the container serves at its own root.
+      VIRTUAL_DEST: /
+      LETSENCRYPT_HOST: ${VERIFIER_UI_HOST}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?set in stack.env}
+
+      # Where the browser reaches the verifier backend. Substituted into the
+      # served JavaScript at request time by nginx's sub_filter, replacing the
+      # http://localhost:8080 that set-env.js baked in at build time. So the
+      # image is repointable without a rebuild.
+      #
+      # A public URL, not a container name: only the browser dereferences it.
+      HOST_API: ${VERIFIER_API_URL:?set in stack.env}
+
+      # Angular bakes <base href="/"> into index.html, so behind a prefix the
+      # browser would resolve every asset to the host root. nginx rewrites it
+      # per request. Must match VIRTUAL_PATH.
+      BASE_HREF: ${BASE_HREF:?set in stack.env}
+    networks:
+      - proxy-net
+
+networks:
+  # Created by eudi-srv-wallet-provider's deploy stack.
+  proxy-net:
+    external: true
+    name: proxy-net
