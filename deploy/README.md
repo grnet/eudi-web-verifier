@@ -69,8 +69,10 @@ base, not against the page URL. Behind a prefix the base has to carry the prefix
 or every stylesheet and script is fetched from the host root, which here is the
 status list. The page returns 200 and renders blank with 404s in the console.
 
-The issuer frontend does not have this problem because it is Flask rendering
-templates server-side, where `url_for()` honours `SCRIPT_NAME`.
+The issuer frontend has the same class of problem for a different reason: its
+Flask `url_for('static')` emits absolute `/static/...` because nothing sets the
+WSGI `SCRIPT_NAME`. It is fixed the same way, with a `sub_filter` in the wallet
+provider's compose.
 
 **The fix lives in `eudi-srv-wallet-provider`, not here.** That stack owns
 nginx-proxy and the `proxy-vhost` volume, and its `deploy/compose.yaml` mounts a
