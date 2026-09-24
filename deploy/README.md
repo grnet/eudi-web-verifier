@@ -81,7 +81,6 @@ per-path location file:
     /etc/nginx/vhost.d/demo.eudiw.grnet.gr_<sha1 of VIRTUAL_PATH>_location
 
         sub_filter '<base href="/">' '<base href="/verifier-ui/">';
-        sub_filter_types text/html;
         sub_filter_once off;
 
 so the rewrite happens on the way out of the proxy and this repository keeps
