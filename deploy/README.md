@@ -58,50 +58,62 @@ moving it invalidates them. The name is the cheaper compromise.
 `VIRTUAL_DEST=/` strips the prefix, so nginx inside the container serves at its
 own root.
 
-## The base href, and why it needs rewriting
+## The base href, and why the proxy rewrites it
 
 **This is the one thing that makes this service different from the issuer
 frontend**, and it is worth understanding before changing the path.
 
-Angular bakes `<base href="/">` into `index.html` at build time. Behind a path
-prefix the browser resolves every relative asset against that base, so
-`chunk-ABC.js` is fetched from `https://demo.eudiw.grnet.gr/chunk-ABC.js` — the
-host root, which belongs to the status list. The page returns 200 and then
-renders blank with 404s in the console.
+Angular emits relative asset references (`styles-X.css`, no leading slash) and a
+`<base href="/">` in `index.html`. The browser resolves the assets against that
+base, not against the page URL. Behind a prefix the base has to carry the prefix
+or every stylesheet and script is fetched from the host root, which here is the
+status list. The page returns 200 and renders blank with 404s in the console.
 
 The issuer frontend does not have this problem because it is Flask rendering
 templates server-side, where `url_for()` honours `SCRIPT_NAME`.
 
-Two ways to fix it: rebuild with `ng build --base-href`, which bakes the prefix
-into the image and makes it deployment-specific, or rewrite it at request time.
-This stack does the second, in `nginx/templates/nginx.conf.template`:
+**The fix lives in `eudi-srv-wallet-provider`, not here.** That stack owns
+nginx-proxy and the `proxy-vhost` volume, and its `deploy/compose.yaml` mounts a
+per-path location file:
 
-    sub_filter '<base href="/">' '<base href="$BASE_HREF">';
-    sub_filter_once off;
+    /etc/nginx/vhost.d/demo.eudiw.grnet.gr_<sha1 of VIRTUAL_PATH>_location
 
-The image stays prefix-agnostic and the path is a `stack.env` change.
+        sub_filter '<base href="/">' '<base href="/verifier-ui/">';
+        sub_filter_types text/html;
+        sub_filter_once off;
 
-`sub_filter_once off` matters: the API URL and the base href are two different
-replacements, and with `once on` only the first in each response is applied.
+so the rewrite happens on the way out of the proxy and this repository keeps
+**zero drift from upstream**. The `Dockerfile` and `nginx.conf.template` here
+are byte-identical to upstream's.
 
-**`BASE_HREF` must match `VIRTUAL_PATH`,** slashes included. Nothing enforces it
-at deploy time, so the verify step checks the served HTML carries the right base
-href rather than trusting the configuration.
+Two alternatives were tested and rejected, both of which work:
 
-The `Dockerfile` sets `ENV BASE_HREF=/` so the image still runs with the
-variable unset. Without that default, nginx's envsubst leaves the literal
-`$BASE_HREF` in the config and the container fails to start with
-`unknown "base_href" variable` — found by testing, not by reading.
+- `ARG BASE_HREF` plus `ng build --base-href`, set from `docker-build.yml`. One
+  upstream file changed, but the image becomes specific to the path it was
+  built for.
+- A second `sub_filter` in `nginx/templates/nginx.conf.template` plus
+  `ENV BASE_HREF=/` in the `Dockerfile`, so the image stays path-agnostic. Two
+  upstream files changed.
+
+The cost of the chosen approach is that this service's routing is configured in
+another repository, alongside the `/.well-known/` rewrites that are there for
+the same structural reason.
+
+**Consequence for deploy order:** the wallet provider must be deployed before
+this stack, or the UI serves a page whose assets all 404.
+
+**The sha1 must match `VIRTUAL_PATH` exactly.** `printf '%s' '/verifier-ui/' |
+shasum`, no trailing newline. A wrong hash is silently ignored by nginx-proxy,
+so nothing errors and the page is simply broken.
 
 ## Configuration
 
 | Variable | What it does |
 | --- | --- |
-| `HOST_API` | Where the browser reaches the verifier backend. Substituted into the served JavaScript by `sub_filter`, replacing the `http://localhost:8080` baked in at build time. |
-| `BASE_HREF` | Rewrites Angular's `<base href>`. Must match `VIRTUAL_PATH`. |
+| `HOST_API` | Where the browser reaches the verifier backend. Substituted into the served JavaScript by the image's own `sub_filter`, replacing the `http://localhost:8080` baked in at build time. |
 
-Both are applied at **request time**, not container start, so the image is
-repointable without a rebuild.
+The base href is not a variable here; it is rewritten by the proxy, in the
+wallet provider's stack. See above.
 
 `set-env.js` generates `src/environments/environment.ts` from the tracked `.env`
 during `ng build`. That file sets `DOMAIN_NAME=http://localhost:8080`, which is

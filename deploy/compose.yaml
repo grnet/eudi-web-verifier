@@ -30,11 +30,6 @@ services:
       #
       # A public URL, not a container name: only the browser dereferences it.
       HOST_API: ${VERIFIER_API_URL:?set in stack.env}
-
-      # Angular bakes <base href="/"> into index.html, so behind a prefix the
-      # browser would resolve every asset to the host root. nginx rewrites it
-      # per request. Must match VIRTUAL_PATH.
-      BASE_HREF: ${BASE_HREF:?set in stack.env}
     networks:
       - proxy-net
 
