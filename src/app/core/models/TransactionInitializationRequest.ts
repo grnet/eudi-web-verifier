@@ -24,6 +24,7 @@ export type BaseTransactionInitializationRequest = {
   issuer_chain?: string;
   registration_certificate?: string;
   intended_use_id?: string;
+  transaction_data?: Record<string, unknown>[];
 };
 export type RedirectsTransactionInitializationRequest = BaseTransactionInitializationRequest & {
   profile: Profile;

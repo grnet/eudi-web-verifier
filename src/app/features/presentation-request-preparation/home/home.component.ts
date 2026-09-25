@@ -185,7 +185,7 @@ export class HomeComponent implements OnDestroy {
       this.initializationRequest = null;
     }
   }
-  
+
   handleDcApiPresentationOptionsChangedEvent($event: DcApiPresentationOptionsChangedEvent) {
     this.dcApiOptions = $event.options;
     if (this.selectedAttestations && this.selectedAttributes) {
@@ -226,13 +226,23 @@ export class HomeComponent implements OnDestroy {
     const issuerChain =
       this.sessionStorageService.get(ISSUER_CHAIN) ?? undefined;
 
+    //add transaction_data to dcql_query
+    const credentials = this.dcqlService.getDCQLCredentialQueries(
+      selectedAttestations,
+      selectedAttributes
+    );
+
     return {
       dcql_query: {
-        credentials: this.dcqlService.getDCQLCredentialQueries(
-          selectedAttestations,
-          selectedAttributes
-        ),
+        credentials,
       },
+       transaction_data: [
+        {
+          type: 'generic_json',
+          credential_ids: credentials.map((c) => c.id),
+          amount: '50',
+        },
+      ],
       nonce: uuidv4(),
       request_uri_method: options.requestUriMethod,
       issuer_chain: issuerChain,
