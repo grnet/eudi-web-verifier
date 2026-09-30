@@ -1,0 +1,149 @@
+# Build the container image and push it to GHCR.
+#
+# Build only. Deployment is a separate, manually triggered workflow, so a push
+# never changes what is running on a server.
+#
+# Upstream's publish-to-container-registry.yml triggers only on v*.*.* tags,
+# which this fork does not create, so it has never run here. This workflow sits
+# alongside it, untouched, and triggers on the branches the fork uses.
+#
+# `grnet` rather than `main`: main is a clean upstream mirror here, so building
+# it would republish on every sync.
+
+name: Docker build
+
+on:
+  push:
+    branches:
+      - grnet
+      - 'feat/**'
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    name: Build and push
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.4.1
+
+      # Fork PRs cannot read secrets, and unreviewed code should not publish.
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6.2.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+          # `source` links the package to its repository.
+          labels: |
+            org.opencontainers.image.description=Verifier UI for the EUDIW stack (GRNET fork). Angular SPA served by nginx.
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.licenses=Apache-2.0
+
+      - name: Build and push
+        uses: docker/build-push-action@v7.4.0
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+
+      # A static SPA behind nginx, so the image either serves index.html or it
+      # is broken. Both checks below are about the build stage having produced
+      # something, since a failed `ng build` still yields a valid nginx image
+      # serving an empty directory.
+      - name: Smoke test the image
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          IMAGE=$(printf '%s' "${{ steps.meta.outputs.tags }}" | head -1)
+          echo "Testing $IMAGE"
+          docker pull "$IMAGE"
+
+          # The Angular build output, and the gov.gr asset that only exists
+          # because of a cherry-pick. Together they prove the build stage ran
+          # against this branch rather than serving a stale layer.
+          docker run --rm --entrypoint sh "$IMAGE" -c \
+            'test -s /usr/share/nginx/html/index.html'
+          docker run --rm --entrypoint sh "$IMAGE" -c \
+            'test -s /usr/share/nginx/html/assets/logo_govgr_pos.svg'
+
+          # HOST_API is substituted into the config by nginx's own envsubst
+          # entrypoint at container start. If the template is missing, the
+          # container serves on the default port with no rewrite and the UI
+          # silently calls localhost:8080.
+          docker run --rm --entrypoint sh "$IMAGE" -c \
+            'test -s /etc/nginx/templates/nginx.conf.template'
+
+          # Start it and fetch a page, which is the only check that covers
+          # envsubst having produced valid nginx config.
+          cid=$(docker run -d -e HOST_API=https://example.invalid -p 14300:4300 "$IMAGE")
+          trap 'docker rm -f "$cid" >/dev/null 2>&1 || true' EXIT
+          for _ in $(seq 1 15); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://localhost:14300/ || echo 000)
+            [ "$code" = "200" ] && break
+            sleep 2
+          done
+          if [ "$code" != "200" ]; then
+            echo "::error::the container did not serve index.html (got $code)"
+            docker logs "$cid" 2>&1 | tail -20
+            exit 1
+          fi
+          echo "image serves index.html"
+
+          # The whole runtime-configuration mechanism in one check. apiUrl is
+          # baked into a bundle at build time as http://localhost:8080 and
+          # rewritten on the way out by sub_filter. If this stops working the
+          # deployed UI calls localhost and fails only in a browser, so it is
+          # worth asserting rather than assuming.
+          #
+          # Note it lands in a lazy-loaded chunk, not main-*.js, so the file has
+          # to be found rather than guessed.
+          chunk=$(docker exec "$cid" sh -c \
+            "grep -rl 'http://localhost:8080' /usr/share/nginx/html/ 2>/dev/null | head -1")
+          if [ -z "$chunk" ]; then
+            echo "::error::no bundle contains the build-time apiUrl; set-env.js may not have run"
+            exit 1
+          fi
+          served=$(curl -s "http://localhost:14300/$(basename "$chunk")")
+          if printf '%s' "$served" | grep -q 'https://example.invalid' &&
+             ! printf '%s' "$served" | grep -q 'http://localhost:8080'; then
+            echo "HOST_API rewrite works"
+          else
+            echo "::error::sub_filter did not rewrite the API URL"
+            exit 1
+          fi
