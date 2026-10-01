@@ -13,9 +13,7 @@
 name: Docker build
 
 on:
-  # No paths-ignore on push: every commit on these branches gets an image, so
-  # Deploy's default of sha-<commit> always names one, even for a docs-only
-  # commit. The layer cache makes those builds cheap.
+  # No paths-ignore on push, so every commit gets an image Deploy can use.
   push:
     branches:
       - grnet

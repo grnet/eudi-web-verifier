@@ -78,10 +78,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Leaving image_tag empty deploys sha-<this commit>, which exists only once
-      # Docker build has finished for it. Fail here with the reason, rather than
-      # at the pull on the box with a bare "not found". Reads the registry
-      # directly, so it does not need the remote daemon.
+      # Fail early, with a reason, if the image is not in the registry yet.
       - name: Check the image is built
         env:
           IMAGE: ${{ steps.image.outputs.image }}
@@ -90,7 +87,7 @@ jobs:
           if err=$(docker buildx imagetools inspect "$IMAGE" 2>&1 >/dev/null); then
             echo "found $IMAGE"
           elif grep -q 'not found' <<<"$err"; then
-            echo "::error::$IMAGE is not in the registry. If this commit was just pushed, wait for its Docker build run to finish and deploy again; otherwise pass an image tag that exists."
+            echo "::error::$IMAGE is not in the registry. Wait for its Docker build to finish, or pass an image tag that exists."
             exit 1
           else
             echo "$err"
@@ -182,11 +179,9 @@ jobs:
           host=$(grep -E '^VERIFIER_UI_HOST=' deploy/stack.env | cut -d= -f2)
           path=$(grep -E '^VERIFIER_UI_PATH=' deploy/stack.env | cut -d= -f2)
 
-          # Over https, because port 80 answers everything but ACME and the CRL
-          # with a 301. --connect-to sends the request to nginx-proxy on
-          # proxy-net while SNI and Host carry the edge hostname, so the vhost
-          # and its certificate are both exercised: 000 is a TLS or connection
-          # failure, not the service.
+          # Over https: port 80 answers almost everything with a 301.
+          # --connect-to keeps the edge hostname for SNI, so the certificate is
+          # checked too.
           fetch() {
             docker run --rm --network proxy-net curlimages/curl:8.11.1 \
               -s --max-time 15 --connect-to "$host:443:nginx-proxy:443" \
@@ -219,9 +214,7 @@ jobs:
             echo "  ok   <base href=\"$path\">"
           else
             echo "  FAIL base href is not $path"
-            # || true: the runner's shell is bash -e, and with pipefail a body
-            # with no base href at all would end the step here, skipping the
-            # checks below.
+            # || true: under bash -e, no match would end the step here.
             printf '%s' "$body" | grep -o '<base href="[^"]*">' | sed 's/^/       got: /' || true
             fail=1
           fi
