@@ -78,6 +78,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Leaving image_tag empty deploys sha-<this commit>, which exists only once
+      # Docker build has finished for it. Fail here with the reason, rather than
+      # at the pull on the box with a bare "not found". Reads the registry
+      # directly, so it does not need the remote daemon.
+      - name: Check the image is built
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
+        run: |
+          set -uo pipefail
+          if err=$(docker buildx imagetools inspect "$IMAGE" 2>&1 >/dev/null); then
+            echo "found $IMAGE"
+          elif grep -q 'not found' <<<"$err"; then
+            echo "::error::$IMAGE is not in the registry. If this commit was just pushed, wait for its Docker build run to finish and deploy again; otherwise pass an image tag that exists."
+            exit 1
+          else
+            echo "$err"
+            echo "::error::could not look up $IMAGE"
+            exit 1
+          fi
+
       # config and known_hosts are committed under deploy/ssh/: hostnames, ports
       # and host keys are public data, and keeping them in git makes a change to
       # them reviewable. Only the private key is a secret.
@@ -155,17 +175,25 @@ jobs:
           if docker exec nginx-proxy nginx -t >/dev/null 2>&1; then
             echo "  ok"
           else
-            docker exec nginx-proxy nginx -t 2>&1 | sed 's/^/       /'
+            docker exec nginx-proxy nginx -t 2>&1 | sed 's/^/       /' || true
             fail=1
           fi
 
           host=$(grep -E '^VERIFIER_UI_HOST=' deploy/stack.env | cut -d= -f2)
           path=$(grep -E '^VERIFIER_UI_PATH=' deploy/stack.env | cut -d= -f2)
 
-          probe() {
+          # Over https, because port 80 answers everything but ACME and the CRL
+          # with a 301. --connect-to sends the request to nginx-proxy on
+          # proxy-net while SNI and Host carry the edge hostname, so the vhost
+          # and its certificate are both exercised: 000 is a TLS or connection
+          # failure, not the service.
+          fetch() {
             docker run --rm --network proxy-net curlimages/curl:8.11.1 \
-              -s -o /dev/null -w '%{http_code}' --max-time 15 \
-              -H "Host: $host" "http://nginx-proxy$1" 2>/dev/null || echo 000
+              -s --max-time 15 --connect-to "$host:443:nginx-proxy:443" \
+              "${@:2}" "https://$host$1" 2>/dev/null
+          }
+          probe() {
+            fetch "$1" -o /dev/null -w '%{http_code}' || echo 000
           }
 
           echo "── the UI is served ──"
@@ -186,19 +214,21 @@ jobs:
           # asset to the host root and the page loads blank with 404s in the
           # console. Nothing else catches this: the HTML itself is fine.
           echo "── base href rewritten ──"
-          body=$(docker run --rm --network proxy-net curlimages/curl:8.11.1 \
-                   -s --max-time 15 -H "Host: $host" "http://nginx-proxy$path" 2>/dev/null || true)
+          body=$(fetch "$path" || true)
           if printf '%s' "$body" | grep -q "<base href=\"$path\">"; then
             echo "  ok   <base href=\"$path\">"
           else
             echo "  FAIL base href is not $path"
-            printf '%s' "$body" | grep -o '<base href="[^"]*">' | sed 's/^/       got: /'
+            # || true: the runner's shell is bash -e, and with pipefail a body
+            # with no base href at all would end the step here, skipping the
+            # checks below.
+            printf '%s' "$body" | grep -o '<base href="[^"]*">' | sed 's/^/       got: /' || true
             fail=1
           fi
 
           # Six other services share this hostname.
           echo "── siblings still routed ──"
-          for p in /verifier/wallet/public-keys.json /wallet-provider/jwks /token_status_list/swagger/ /issuer/ /frontend/ /auth/; do
+          for p in /verifier/wallet/public-keys.json /wallet-provider/jwks /token_status_list/swagger/ /issuer/ /frontend/ /issuer/oidc/.well-known/openid-configuration; do
             c=$(probe "$p")
             if [[ "$c" == "200" ]]; then
               echo "  ok   $p returned 200"
