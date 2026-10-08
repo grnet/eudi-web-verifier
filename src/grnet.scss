@@ -1,0 +1,92 @@
+// GRNET: the demo's colours, gov.gr's (guide.services.gov.gr/docs/brand):
+// #003476 primary and #00AEEF secondary, as Angular Material palettes for
+// custom-theme.scss. Each runs from tints of the colour (50-400) through the
+// colour itself (500) to shades of it (600-900).
+
+$primary-palette: (
+    50: #e6ebf1,
+    100: #bfccdd,
+    200: #8ca4c1,
+    300: #597ba6,
+    400: #2e598f,
+    500: #003476,
+    600: #002f6a,
+    700: #002a5e,
+    800: #002453,
+    900: #001d41,
+    A100: #bfccdd,
+    A200: #597ba6,
+    A400: #2e598f,
+    A700: #002a5e,
+    contrast: (
+        50: rgba(0, 0, 0, 0.87),
+        100: rgba(0, 0, 0, 0.87),
+        200: rgba(0, 0, 0, 0.87),
+        300: white,
+        400: white,
+        500: white,
+        600: white,
+        700: white,
+        800: white,
+        900: white,
+        A100: rgba(0, 0, 0, 0.87),
+        A200: white,
+        A400: white,
+        A700: white,
+    ),
+);
+
+$accent-palette: (
+    50: #e6f7fd,
+    100: #bfebfb,
+    200: #8cdcf9,
+    300: #59cef5,
+    400: #2ebef2,
+    500: #00aeef,
+    600: #009dd7,
+    700: #008bbf,
+    800: #007aa7,
+    900: #006083,
+    A100: #bfebfb,
+    A200: #00aeef,
+    A400: #009dd7,
+    A700: #008bbf,
+    contrast: (
+        50: rgba(0, 0, 0, 0.87),
+        100: rgba(0, 0, 0, 0.87),
+        200: rgba(0, 0, 0, 0.87),
+        300: rgba(0, 0, 0, 0.87),
+        400: rgba(0, 0, 0, 0.87),
+        500: #003476,
+        600: white,
+        700: white,
+        800: white,
+        900: white,
+        A100: rgba(0, 0, 0, 0.87),
+        A200: #003476,
+        A400: white,
+        A700: white,
+    ),
+);
+
+// Links in gov.gr's primary colour rather than the browser's default blue.
+a {
+    color: #003476;
+}
+
+a:hover {
+    color: #002a5e;
+}
+
+// The header as on the issuer's pages and the landing page: 16px above and
+// below the logos, the EUDI Wallet logo 40px high and gov.gr BETA 52px.
+vc-wallet-layout-header header.container {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    align-items: center;
+}
+
+vc-wallet-layout-header img[alt="wallet-logo"] {
+    height: 40px;
+    width: auto;
+}
