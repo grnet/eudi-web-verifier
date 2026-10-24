@@ -14,3 +14,6 @@ coverage
 cypress
 reports
 .angular
+
+# macOS Finder metadata
+**/.DS_Store
