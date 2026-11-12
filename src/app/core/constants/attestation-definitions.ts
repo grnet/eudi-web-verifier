@@ -29,8 +29,13 @@ export const PID_ATTESTATION: AttestationDefinition = {
     { identifier: 'portrait', attribute: 'Portrait'},
     { identifier: 'email_address', attribute: 'Email address'},
     { identifier: 'mobile_phone_number', attribute: 'Mobile phone number'},
-    { identifier: 'trust_anchor', attribute: 'Trust anchor'},
   ]
+}
+
+export const PID_CROSS_BORDER_ATTESTATION: AttestationDefinition = {
+  name: "Person Identification Data (PID - cross border)",
+  type: AttestationType.PID_CROSS_BORDER,
+  dataSet: PID_ATTESTATION.dataSet
 }
 
 export const MDL_ATTESTATION: AttestationDefinition = {
@@ -70,76 +75,6 @@ export const MDL_ATTESTATION: AttestationDefinition = {
     { identifier: 'family_name_national_character', attribute: 'Family name national character'},
     { identifier: 'given_name_national_character', attribute: 'Given name national character'},
     { identifier: 'signature_usual_mark', attribute: 'Signature usual mark'}
-  ]
-}
-
-export const EDUCATIONAL_ID_ATTESTATION: AttestationDefinition = {
-  name: "EducationalID",
-  type: AttestationType.EDUCATIONAL_ID,
-  dataSet: [
-    { identifier: 'commonName', attribute: 'Educational ID identifier'},
-    { identifier: 'dateOfBirth', attribute: 'Date of birth'},
-    { identifier: 'displayName', attribute: 'Display name'},
-    { identifier: 'eduPersonAffiliation', attribute: 'Person Affiliation'},
-    { identifier: 'eduPersonAssurance', attribute: 'Assurance'},
-    { identifier: 'eduPersonPrimaryAffiliation', attribute: 'Primary affiliation'},
-    { identifier: 'eduPersonPrincipalName', attribute: 'Principal name'},
-    { identifier: 'eduPersonScopedAffiliation', attribute: 'Scoped Affiliation'},
-    { identifier: 'familyName', attribute: 'Family name'},
-    { identifier: 'firstName', attribute: 'First name'},
-    { identifier: 'id', attribute: 'ID'},
-    { identifier: 'identifier', attribute: 'Identifier'},
-    { identifier: 'mail', attribute: 'Mail address'},
-    { identifier: 'schacHomeOrganization', attribute: 'Home organization'},
-    { identifier: 'schacPersonalUniqueCode', attribute: 'Personal unique code'},
-    { identifier: 'schacPersonalUniqueID', attribute: 'Personal unique ID'}
-  ]
-}
-
-export const ALLIANCE_ID_ATTESTATION: AttestationDefinition = {
-  name: "AllianceID",
-  type: AttestationType.ALLIANCE_ID,
-  dataSet: [
-    { identifier: 'id', attribute: 'ID'},
-    { identifier: 'identifier', attribute: 'identifier'}
-  ]
-}
-
-export const MY_ACADEMIC_ID_ATTESTATION: AttestationDefinition = {
-  name: "MyAcademicID",
-  type: AttestationType.MY_ACADEMIC_ID,
-  dataSet: [
-    { identifier: 'assurance', attribute: 'Assurance'},
-    { identifier: 'communityUserIdentifier', attribute: 'Community user identifier'},
-    { identifier: 'displayName', attribute: 'Display name'},
-    { identifier: 'emailAddress', attribute: 'Email address'},
-    { identifier: 'entitlements', attribute: 'Entitlements'},
-    { identifier: 'europeanStudentIdentifier', attribute: 'European student identifier'},
-    { identifier: 'externalAffiliation', attribute: 'External affiliation'},
-    { identifier: 'familyName', attribute: 'Family name'},
-    { identifier: 'givenName', attribute: 'Given name'},
-    { identifier: 'id', attribute: 'ID'},
-    { identifier: 'organization', attribute: 'Organization'}
-  ]
-}
-
-export const EUVETMC_ATTESTATION: AttestationDefinition = {
-  name: "European Vocational Education and Training Microcredential",
-  type: AttestationType.EUVETMC,
-  dataSet: [
-    { identifier: 'id', attribute: 'ID'},
-    { identifier: 'dateOfBirth', attribute: 'Date of birth'},
-    { identifier: 'familyName', attribute: 'Family name'},
-    { identifier: 'givenName', attribute: 'Given name'},
-    { identifier: 'title', attribute: 'Title'},
-    { identifier: 'grade', attribute: 'Grade'},
-    { identifier: 'awardedBy_awardingBody', attribute: 'Awarding body'},
-    { identifier: 'awardedBy_awardingDate', attribute: 'Awarding date'},
-    { identifier: 'awardedBy_location', attribute: 'Awarding location'},
-    { identifier: 'specifiedBy_creditPoint', attribute: 'Credit point'},
-    { identifier: 'specifiedBy_educationSubject', attribute: 'Education subject'},
-    { identifier: 'specifiedBy_mode', attribute: 'Mode'},
-    { identifier: 'specifiedBy_eqfLevel', attribute: 'EQF Level'}
   ]
 }
 
@@ -238,13 +173,10 @@ export const LEARNING_CREDENTIAL_ATTESTATION: AttestationDefinition = {
 
 export const SUPPORTED_ATTESTATIONS: { [id: string]: AttestationDefinition } = {
   "pid": PID_ATTESTATION,
+  "pid_cross_border": PID_CROSS_BORDER_ATTESTATION,
   "mdl": MDL_ATTESTATION,
   "photo_id": PHOTO_ID_ATTESTATION,
   "ehic": EHIC_ATTESTATION,
   "pda1": PDA1_ATTESTATION,
   "learning_credential": LEARNING_CREDENTIAL_ATTESTATION,
-  "educational_id": EDUCATIONAL_ID_ATTESTATION,
-  "alliance_id": ALLIANCE_ID_ATTESTATION,
-  "my_academic_id": MY_ACADEMIC_ID_ATTESTATION,
-  "euvetmc": EUVETMC_ATTESTATION,
 }

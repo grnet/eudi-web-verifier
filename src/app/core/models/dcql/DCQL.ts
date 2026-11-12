@@ -12,8 +12,7 @@ export type CredentialQuery = {
 };
 
 export type CredentialSetQuery = {
-  options: Set<QueryId>[];
-  purpose?: string | number | Object;
+  options: QueryId[][];
   required?: boolean;
 };
 
