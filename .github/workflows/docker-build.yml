@@ -98,7 +98,7 @@ jobs:
           docker run --rm --entrypoint sh "$IMAGE" -c \
             'test -s /usr/share/nginx/html/index.html'
           docker run --rm --entrypoint sh "$IMAGE" -c \
-            'test -s /usr/share/nginx/html/assets/logo_govgr_pos.svg'
+            'test -s /usr/share/nginx/html/assets/logo_grnet.png'
 
           # HOST_API is substituted into the config by nginx's own envsubst
           # entrypoint at container start. If the template is missing, the
